@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aethel Well - Dashboard de Video</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1c3b2c",
+                        "background-light": "#f6f7f7",
+                        "background-dark": "#151d19",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f5f5f0;
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar-fixed {
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 50;
+        }
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav {
+            background-color: rgba(28, 59, 44, 0.1);
+            color: #1c3b2c;
+            border-right: 3px solid #1c3b2c;
+        }
+    </style>
+</head>
+<body class="bg-[#f5f5f0] text-slate-900 font-display">
+<aside class="sidebar-fixed bg-white border-r border-slate-200 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">eco</span>
+</div>
+<div>
+<h1 class="font-bold text-primary leading-tight">Aethel Well</h1>
+<p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Factory System</p>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg active-nav transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm font-medium">Panel de Control</span>
+</a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">folder_open</span>
+<span class="text-sm font-medium">Biblioteca</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">auto_awesome</span>
+<span class="text-sm font-medium">Cola de Creación</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">calendar_month</span>
+<span class="text-sm font-medium">Calendario de Contenido</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">trending_up</span>
+<span class="text-sm font-medium">Rendimiento</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">diversity_3</span>
+<span class="text-sm font-medium">Equipo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">insights</span>
+<span class="text-sm font-medium">Analíticas</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-100">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm font-medium">Configuración</span>
+</a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined text-[22px]">help</span><span class="text-sm font-medium">Ayuda</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors" href="#"><span class="material-symbols-outlined text-[22px]">logout</span><span class="text-sm font-medium">Cerrar Sesión</span></a>
+<div class="mt-4 flex items-center gap-3 p-2 rounded-xl bg-slate-50">
+<div class="size-8 rounded-full overflow-hidden bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm">person</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold text-slate-900 truncate">Totok Michael</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tight">Líder de Contenido</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">unfold_more</span>
+</div>
+</div>
+</aside>
+<main class="main-content flex flex-col animate-in fade-in duration-700">
+<header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+<input class="w-full bg-slate-100 border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400" placeholder="Buscar tarea..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="size-10 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<div class="h-6 w-px bg-slate-200 mx-2"></div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 rounded-full shadow-md px-6 bg-[#1B3A2B]"><span class="material-symbols-outlined text-[18px]">add</span> Generar Video</button>
+</div>
+</header>
+<div class="p-8 space-y-8 max-w-7xl mx-auto w-full">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-slate-500">
+<span>Aethel Well</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-medium">Panel de Control</span>
+</div>
+<h1 class="text-3xl font-black text-slate-900 tracking-tight text-4xl font-extrabold">Aethel Well - Dashboard de Video</h1>
+<p class="text-slate-600 max-w-2xl">Planifica, genera y sigue tu contenido de bienestar con facilidad.</p>
+</div>
+<div class="fixed top-20 right-8 z-50 bg-[#1B3A2B] text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
+<span class="material-symbols-outlined text-amber-400">rocket_launch</span>
+<p class="text-sm font-medium">¡Recibido! Procesando guion en la Fábrica...</p>
+</div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-[#1B3A2B] p-6 rounded-xl border border-slate-200 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-white/10 p-2 rounded-lg text-white">
+<span class="material-symbols-outlined">video_library</span>
+</div>
+<span class="text-xs font-bold text-white bg-white/20 px-2 py-1 rounded">+5 este mes</span>
+</div>
+<p class="text-white/70 text-sm font-medium">Total de videos</p>
+<h3 class="text-2xl font-bold text-white mt-1">2,400</h3>
+</div>
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">fact_check</span>
+</div>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">+3 este mes</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Listos para revisión</p>
+<h3 class="text-2xl font-bold text-slate-900 mt-1">15</h3>
+</div>
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">pending</span>
+</div>
+<span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded">Generando...</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">En Proceso</p>
+<h3 class="text-2xl font-bold text-slate-900 mt-1">13</h3>
+</div>
+<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">list_alt</span>
+</div>
+<span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Pendientes</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">En Cola</p>
+<h3 class="text-2xl font-bold text-slate-900 mt-1">2</h3>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column: Review Queue -->
+<div class="lg:col-span-2 bg-white border border-slate-200 rounded-[20px] p-6 shadow-sm flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-lg font-bold text-slate-900">Cola de Revisión de Video</h2>
+<span class="text-xs font-semibold text-primary bg-primary/5 px-3 py-1 rounded-full">4 pendientes</span>
+</div>
+<div class="flex-1 flex flex-col justify-center items-center py-8 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
+<div class="w-full max-w-md bg-white p-4 rounded-xl border border-slate-100 shadow-sm mb-6">
+<div class="flex items-center gap-4">
+<div class="size-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined">movie</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900">Video #A4: El Poder de la Respiración</p>
+<p class="text-xs text-slate-500">Listo para aprobación final</p>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded">Borrador v2</span>
+</div>
+</div>
+<button class="flex items-center gap-2 bg-[#1B3A2B] text-white px-8 py-4 rounded-full font-bold shadow-lg hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">send</span>
+                Revisar en Telegram
+            </button>
+</div>
+</div>
+<!-- Right Column: Stats & Progress -->
+<div class="space-y-6">
+<!-- Balance de Pilares -->
+<div class="bg-white border border-slate-200 rounded-[20px] p-6 shadow-sm">
+<h2 class="text-sm font-bold text-slate-900 mb-6">Balance de Pilares</h2>
+<div class="space-y-4">
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-slate-600">Meditación</span>
+<span class="text-primary">85%</span>
+</div>
+<div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-[#1B3A2B] w-[85%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-slate-600">Nutrición</span>
+<span class="text-primary">62%</span>
+</div>
+<div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-[#2d5c45] w-[62%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-slate-600">Sueño</span>
+<span class="text-primary">48%</span>
+</div>
+<div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-[#4a8a6b] w-[48%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Progreso de Renderizado -->
+<div class="bg-white border border-slate-200 rounded-[20px] p-6 shadow-sm flex flex-col items-center text-center">
+<h2 class="text-sm font-bold text-slate-900 mb-4 w-full text-left">Progreso de Renderizado</h2>
+<div class="relative size-32 flex items-center justify-center">
+<svg class="size-full transform -rotate-90">
+<circle class="text-slate-100" cx="64" cy="64" fill="transparent" r="56" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary animate-pulse" cx="64" cy="64" fill="transparent" r="56" stroke="currentColor" stroke-dasharray="351.8" stroke-dashoffset="207.5" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-black text-slate-900">41%</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Render</span>
+</div>
+</div>
+<p class="mt-4 text-xs font-medium text-slate-600">Proyecto en Curso</p>
+</div>
+</div>
+</div></div>
+</main>
+<script>
+  document.querySelector('.bg-\\[\\#1B3A2B\\]').addEventListener('click', async () => {
+    const tema = prompt('Ingresa el tema del nuevo video:');
+    if (!tema) return;
+    try {
+      const btn = document.querySelector('.bg-\\[\\#1B3A2B\\]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Generando...';
+      const response = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tema })
+      });
+      const data = await response.json();
+      btn.innerHTML = originalText;
+      if(data.success) {
+        alert('Video enviado a producción. Revisa tu Telegram.');
+      }
+    } catch(err) {
+      console.error(err);
+      alert('Error de conexión');
+    }
+  });
+</script>
+</body></html>

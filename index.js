@@ -16,8 +16,14 @@ const PORT = process.env.PORT || 3000;
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN || "NO_TOKEN_PROVIDED");
 const chatId = process.env.TELEGRAM_CHAT_ID;
 
+const path = require('path');
+
+// Servir la carpeta estática del dashboard
+const dashboardPath = path.join(__dirname, 'public', 'stitch_video_creator', 'aethel_well_dashboard_interactiva');
+app.use(express.static(dashboardPath));
+
 app.get('/', (req, res) => {
-  res.json({ status: "Aethel Well Factory Online" });
+  res.sendFile(path.join(dashboardPath, 'index.html'));
 });
 
 // Ruta para recibir proyectos y notificar
