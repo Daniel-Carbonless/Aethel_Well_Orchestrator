@@ -246,8 +246,8 @@ app.listen(PORT, () => {
   // Enviar mensaje automático al arrancar
   if (chatId && process.env.TELEGRAM_TOKEN) {
     bot.launch(); // Iniciar polling para recibir interacciones
-    bot.telegram.sendMessage(chatId, '🌿 Conexión Exitosa: La Fábrica Aethel Well está en línea y lista para procesar bienestar.')
-      .catch(console.error);
+    // bot.telegram.sendMessage(chatId, '🌿 Conexión Exitosa: La Fábrica Aethel Well está en línea y lista para procesar bienestar.').catch(console.error);
+    console.log("Bot Connected - Welcome message silenced.");
   } else {
     console.log("No hay TELEGRAM_TOKEN o TELEGRAM_CHAT_ID configurado para enviar el mensaje de inicio.");
   }
