@@ -29,6 +29,12 @@ app.get('/views/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'que
 app.get('/views/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'settings.html')));
 app.get('/views/success', (req, res) => res.sendFile(path.join(dashboardPath, 'success.html')));
 
+app.get('/views/calendar', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
+app.get('/views/performance', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
+app.get('/views/team', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
+app.get('/views/analytics', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
+app.get('/views/help', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
+
 // API: Listar Proyectos Recientes
 app.get('/api/projects', (req, res) => {
   const jsonFilePath = 'projects.json';
@@ -105,6 +111,11 @@ app.get('/', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')))
 app.get('/library', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 app.get('/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 app.get('/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/calendar', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/performance', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/team', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/analytics', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/help', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 app.get('/success', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 
 // Ruta para recibir proyectos y notificar
