@@ -151,20 +151,20 @@
 <div class="bg-white/10 p-2 rounded-lg text-white">
 <span class="material-symbols-outlined">video_library</span>
 </div>
-<span class="text-xs font-bold text-white bg-white/20 px-2 py-1 rounded">+5 este mes</span>
+<span class="text-xs font-bold text-white bg-white/20 px-2 py-1 rounded">Actividad</span>
 </div>
 <p class="text-white/70 text-sm font-medium">Total de videos</p>
-<h3 class="text-2xl font-bold text-white mt-1">2,400</h3>
+<h3 id="stat-total" class="text-2xl font-bold text-white mt-1">-</h3>
 </div>
 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
 <div class="flex justify-between items-start mb-4">
 <div class="bg-primary/10 p-2 rounded-lg text-primary">
 <span class="material-symbols-outlined">fact_check</span>
 </div>
-<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">+3 este mes</span>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Acción Mínima</span>
 </div>
 <p class="text-slate-500 text-sm font-medium">Listos para revisión</p>
-<h3 class="text-2xl font-bold text-slate-900 mt-1">15</h3>
+<h3 id="stat-ready" class="text-2xl font-bold text-slate-900 mt-1">-</h3>
 </div>
 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
 <div class="flex justify-between items-start mb-4">
@@ -174,7 +174,7 @@
 <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded">Generando...</span>
 </div>
 <p class="text-slate-500 text-sm font-medium">En Proceso</p>
-<h3 class="text-2xl font-bold text-slate-900 mt-1">13</h3>
+<h3 id="stat-process" class="text-2xl font-bold text-slate-900 mt-1">-</h3>
 </div>
 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
 <div class="flex justify-between items-start mb-4">
@@ -184,7 +184,7 @@
 <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Pendientes</span>
 </div>
 <p class="text-slate-500 text-sm font-medium">En Cola</p>
-<h3 class="text-2xl font-bold text-slate-900 mt-1">2</h3>
+<h3 id="stat-pending" class="text-2xl font-bold text-slate-900 mt-1">-</h3>
 </div>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -192,25 +192,10 @@
 <div class="lg:col-span-2 bg-white border border-slate-200 rounded-[20px] p-6 shadow-sm flex flex-col">
 <div class="flex justify-between items-center mb-6">
 <h2 class="text-lg font-bold text-slate-900">Cola de Revisión de Video</h2>
-<span class="text-xs font-semibold text-primary bg-primary/5 px-3 py-1 rounded-full">4 pendientes</span>
+<span id="stat-pending-review" class="text-xs font-semibold text-primary bg-primary/5 px-3 py-1 rounded-full">- pendientes</span>
 </div>
-<div class="flex-1 flex flex-col justify-center items-center py-8 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
-<div class="w-full max-w-md bg-white p-4 rounded-xl border border-slate-100 shadow-sm mb-6">
-<div class="flex items-center gap-4">
-<div class="size-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
-<span class="material-symbols-outlined">movie</span>
-</div>
-<div class="flex-1">
-<p class="text-sm font-bold text-slate-900">Video #A4: El Poder de la Respiración</p>
-<p class="text-xs text-slate-500">Listo para aprobación final</p>
-</div>
-<span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded">Borrador v2</span>
-</div>
-</div>
-<button class="flex items-center gap-2 bg-[#1B3A2B] text-white px-8 py-4 rounded-full font-bold shadow-lg hover:opacity-90 transition-all">
-<span class="material-symbols-outlined">send</span>
-                Revisar en Telegram
-            </button>
+<div id="review-queue-container" class="flex-1 flex flex-col justify-center items-center py-8 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
+<!-- Dynamic projects will load here -->
 </div>
 </div>
 <!-- Right Column: Stats & Progress -->
@@ -383,13 +368,19 @@
         }
       });
 
-      if (path === '/library') {
-        loadLibraryProjects();
+      if (path === '/') {
+        loadDashboardStats();
+      } else if (path === '/queue') {
+        loadQueueProjects();
+      } else if (path === '/settings') {
+        loadSettings();
       }
     } catch(e) {
       console.error("Error cargando vista SPA:", e);
     }
   }
+
+// ... existing code ...
 
   async function loadLibraryProjects() {
     try {
@@ -421,10 +412,127 @@
     } catch(e) { console.error("Error cargando proyectos en la biblioteca:", e); }
   }
 
+  async function loadQueueProjects() {
+    try {
+      const res = await fetch('/api/projects');
+      const data = await res.json();
+      const tbody = document.getElementById('queue-table-body');
+      
+      if (tbody) {
+        tbody.innerHTML = '';
+        if (data.projects.length === 0) {
+           tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-slate-500">No hay proyectos en cola</td></tr>';
+           return;
+        }
+
+        data.projects.forEach(p => {
+          let badgeClass = 'bg-slate-100 text-slate-600';
+          let dotClass = 'bg-slate-400';
+          let statusText = p.status || 'PENDING';
+          
+          if (p.status === 'PENDING') { badgeClass = 'bg-purple-100 text-purple-700'; dotClass = 'bg-purple-500'; statusText = 'Esperando Aprobación'; }
+          else if (p.status === 'READY_TO_RENDER') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = 'Generando Guion'; }
+          else if (p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500'; statusText = 'Creando Clips'; }
+
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-primary/[0.02] dark:hover:bg-primary/[0.05] transition-colors';
+          row.innerHTML = `
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">${p.tema}</span>
+                <span class="text-xs text-slate-400">ID: #${p.id.slice(-4)}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                <span class="size-1.5 rounded-full ${dotClass} mr-1.5"></span>
+                ${statusText}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                <span class="material-symbols-outlined text-lg">camera_roll</span>
+                ${p.plataforma}
+              </div>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-primary dark:text-slate-300 border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
+                Ver Guion
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+// ... loadQueueProjects ends here (this replaces the bottom part of loadQueueProjects and the DOMContentLoaded initialization)
+    } catch(e) { console.error("Error al cargar la cola de creación:", e); }
+  }
+
+  async function loadSettings() {
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      
+      const elEleven = document.getElementById('key_elevenlabs');
+      const elHiggs = document.getElementById('key_higgsfield');
+      const elHeygen = document.getElementById('key_heygen');
+      const elTgToken = document.getElementById('key_telegram_token');
+      const elTgChat = document.getElementById('key_telegram_chat');
+      
+      if (elEleven) elEleven.value = data.elevenlabs;
+      if (elHiggs) elHiggs.value = data.higgsfield;
+      if (elHeygen) elHeygen.value = data.heygen;
+      if (elTgToken) elTgToken.value = data.telegram_token;
+      if (elTgChat) elTgChat.value = data.telegram_chat;
+    } catch(e) { console.error("Error al cargar configuración:", e); }
+  }
+
   // Carga inicial
   document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname !== '/') {
       loadPage(window.location.pathname);
+    } else {
+      loadDashboardStats();
+    }
+  });
+
+  // Delegación adicional para botones fuera del form
+  document.addEventListener('click', async (e) => {
+    // ... logic for aside/nav already covered inside the primary click listener (we need to merge if not careful. The original code has the click listener at the top before loadPage. We'll just add save settings button listener here)
+    const saveBtn = e.target.closest('#saveSettingsBtn');
+    if (saveBtn) {
+      e.preventDefault();
+      
+      const payload = {
+        elevenlabs: document.getElementById('key_elevenlabs')?.value,
+        higgsfield: document.getElementById('key_higgsfield')?.value,
+        heygen: document.getElementById('key_heygen')?.value,
+        telegram_token: document.getElementById('key_telegram_token')?.value,
+        telegram_chat: document.getElementById('key_telegram_chat')?.value,
+      };
+
+      try {
+        const originalHtml = saveBtn.innerHTML;
+        saveBtn.innerHTML = 'Guardando...';
+        saveBtn.disabled = true;
+
+        const response = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        await response.json();
+        saveBtn.innerHTML = '<span class="material-symbols-outlined">check</span> ¡Guardado!';
+        setTimeout(() => {
+          saveBtn.innerHTML = originalHtml;
+          saveBtn.disabled = false;
+        }, 2000);
+      } catch(err) {
+        console.error(err);
+        alert('Error al guardar configuración');
+        saveBtn.disabled = false;
+      }
     }
   });
 

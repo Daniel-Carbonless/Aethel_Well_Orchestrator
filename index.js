@@ -42,6 +42,64 @@ app.get('/api/projects', (req, res) => {
   }
 });
 
+// API: Obtener Estadísticas
+app.get('/api/stats', (req, res) => {
+  const jsonFilePath = 'projects.json';
+  let projects = [];
+  if (fs.existsSync(jsonFilePath)) {
+    try {
+      projects = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+    } catch (err) {}
+  }
+  
+  const total = projects.length;
+  const ready = projects.filter(p => p.status === 'READY_TO_RENDER').length;
+  const process = projects.filter(p => p.status === 'PROCESSING' || p.status === 'GENERATING').length;
+  const pending = projects.filter(p => p.status === 'PENDING').length;
+  
+  res.json({ total, ready, process, pending });
+});
+
+// API: Obtener y Guardar Configuración (Keys)
+app.get('/api/settings', (req, res) => {
+  res.json({
+    elevenlabs: process.env.ELEVENLABS_KEY ? '********' : '',
+    higgsfield: process.env.HIGGSFIELD_KEY ? '********' : '',
+    heygen: process.env.HEYGEN_KEY ? '********' : '',
+    telegram_token: process.env.TELEGRAM_TOKEN ? '********' : '',
+    telegram_chat: process.env.TELEGRAM_CHAT_ID ? '********' : ''
+  });
+});
+
+app.post('/api/settings', (req, res) => {
+  const keys = req.body;
+  let envContent = '';
+  if (fs.existsSync('.env')) {
+    envContent = fs.readFileSync('.env', 'utf8');
+  }
+  
+  const updateEnv = (key, value) => {
+    if (!value || value === '********') return; // No update if masked or empty
+    const regex = new RegExp(`^${key}=.*$`, 'm');
+    if (regex.test(envContent)) {
+      envContent = envContent.replace(regex, `${key}=${value}`);
+    } else {
+      envContent += `\n${key}=${value}`;
+    }
+    process.env[key] = value;
+  };
+
+  updateEnv('ELEVENLABS_KEY', keys.elevenlabs);
+  updateEnv('HIGGSFIELD_KEY', keys.higgsfield);
+  updateEnv('HEYGEN_KEY', keys.heygen);
+  updateEnv('TELEGRAM_TOKEN', keys.telegram_token);
+  updateEnv('TELEGRAM_CHAT_ID', keys.telegram_chat);
+  
+  fs.writeFileSync('.env', envContent.trim() + '\n');
+  res.json({ success: true });
+});
+
+
 // Rutas Catch-All SPA (todas devuelven index.html para recarga directa)
 app.get('/', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 app.get('/library', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
