@@ -316,21 +316,119 @@
 </div>
 <script>
   const modal = document.getElementById('videoModal');
-  const openBtn = document.querySelector('.bg-\\[\\#1B3A2B\\]'); // El botón principal de Generar Video
-  const closeBtn = document.getElementById('closeModal');
   const form = document.getElementById('videoForm');
   const submitBtn = document.getElementById('submitBtn');
 
-  openBtn.addEventListener('click', () => {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+  // Delegación de Eventos para el SPA y Modal
+  document.addEventListener('click', async (e) => {
+    // 1. Navegación en el Sidebar
+    const link = e.target.closest('aside nav a');
+    if (link) {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('/')) {
+        e.preventDefault();
+        window.history.pushState({}, '', href);
+        await loadPage(href);
+      }
+    }
+
+    // 2. Abrir Modal de Generación (El botón original está en el header instanciado)
+    const openBtn = e.target.closest('.bg-\\[\\#1B3A2B\\].text-white');
+    if (openBtn && openBtn.textContent.includes('Generar Video')) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // 3. Cerrar Modal
+    if (e.target.closest('#closeModal')) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
   });
 
-  closeBtn.addEventListener('click', () => {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+  window.addEventListener('popstate', () => {
+    loadPage(window.location.pathname);
   });
 
+  async function loadPage(path) {
+    try {
+      const viewPath = path === '/' ? '/views/index' : '/views' + path;
+      const res = await fetch(viewPath);
+      if (!res.ok) return;
+      const html = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      
+      const newMain = doc.querySelector('.main-content');
+      if (newMain) {
+        document.querySelector('.main-content').innerHTML = newMain.innerHTML;
+      }
+
+      // Actualizar estado activo en Sidebar
+      document.querySelectorAll('aside nav a').forEach(a => {
+        const href = a.getAttribute('href');
+        // Limpiamos todos los estilos de "activo" o "inactivo"
+        a.className = "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors";
+        
+        if (href === path) {
+          if (href === '/') {
+            a.classList.add('bg-primary/10', 'text-primary', 'border-r-4', 'border-primary'); 
+          } else if (href === '/queue') {
+            a.classList.add('bg-primary', 'text-white', 'shadow-sm');
+          } else {
+             a.classList.add('bg-primary/5', 'text-primary'); 
+          }
+        } else {
+          a.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:bg-primary/5');
+        }
+      });
+
+      if (path === '/library') {
+        loadLibraryProjects();
+      }
+    } catch(e) {
+      console.error("Error cargando vista SPA:", e);
+    }
+  }
+
+  async function loadLibraryProjects() {
+    try {
+      const res = await fetch('/api/projects');
+      const data = await res.json();
+      
+      const grids = document.querySelectorAll('.main-content .grid');
+      const container = grids[0];
+      if (container) {
+        container.innerHTML = '';
+        (data.projects || []).forEach(p => {
+          const card = document.createElement('div');
+          card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm";
+          const estadoColor = p.status === 'READY_TO_RENDER' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600';
+          card.innerHTML = `
+            <div class="flex justify-between items-start mb-4">
+              <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                <span class="material-symbols-outlined">movie</span>
+              </div>
+              <span class="text-xs font-bold px-2 py-1 rounded ${estadoColor}">${p.status || 'PENDING'}</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1 truncate">${p.tema}</h3>
+            <p class="text-xs text-slate-500 mb-4">${p.plataforma} | ${new Date(p.timestamp).toLocaleDateString()}</p>
+            <button class="w-full text-sm font-semibold text-primary py-2 bg-primary/5 rounded-lg hover:bg-primary/10 transition-colors">Ver Detalles</button>
+          `;
+          container.appendChild(card);
+        });
+      }
+    } catch(e) { console.error("Error cargando proyectos en la biblioteca:", e); }
+  }
+
+  // Carga inicial
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname !== '/') {
+      loadPage(window.location.pathname);
+    }
+  });
+
+  // Envío del Formulario Completo
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
@@ -362,7 +460,10 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         form.reset();
-        alert('Producción iniciada enviada. Revisa Telegram para la aprobación final.');
+        alert('Producción iniciada via API. Revisa Telegram para la aprobación.');
+        if (window.location.pathname === '/library') {
+          loadLibraryProjects();
+        }
       }
     } catch(err) {
       console.error(err);

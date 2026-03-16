@@ -22,11 +22,32 @@ const path = require('path');
 const dashboardPath = path.join(__dirname, 'public');
 app.use(express.static(dashboardPath));
 
+// Rutas de Vistas Originales para SPA fetch
+app.get('/views/index', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/views/library', (req, res) => res.sendFile(path.join(dashboardPath, 'library.html')));
+app.get('/views/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'queue.html')));
+app.get('/views/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'settings.html')));
+app.get('/views/success', (req, res) => res.sendFile(path.join(dashboardPath, 'success.html')));
+
+// API: Listar Proyectos Recientes
+app.get('/api/projects', (req, res) => {
+  const jsonFilePath = 'projects.json';
+  if (fs.existsSync(jsonFilePath)) {
+    try {
+      const data = fs.readFileSync(jsonFilePath, 'utf8');
+      res.json({ projects: JSON.parse(data).reverse() });
+    } catch (err) { res.json({ projects: [] }); }
+  } else {
+    res.json({ projects: [] });
+  }
+});
+
+// Rutas Catch-All SPA (todas devuelven index.html para recarga directa)
 app.get('/', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
-app.get('/library', (req, res) => res.sendFile(path.join(dashboardPath, 'library.html')));
-app.get('/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'queue.html')));
-app.get('/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'settings.html')));
-app.get('/success', (req, res) => res.sendFile(path.join(dashboardPath, 'success.html')));
+app.get('/library', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/success', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 
 // Ruta para recibir proyectos y notificar
 app.post('/api/generate-video', (req, res) => {
