@@ -19,37 +19,44 @@ const chatId = process.env.TELEGRAM_CHAT_ID;
 const path = require('path');
 
 // Servir la carpeta estática del dashboard
-const dashboardPath = path.join(__dirname, 'public', 'stitch_video_creator', 'aethel_well_dashboard_interactiva');
+const dashboardPath = path.join(__dirname, 'public');
 app.use(express.static(dashboardPath));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(dashboardPath, 'index.html'));
-});
+app.get('/', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+app.get('/library', (req, res) => res.sendFile(path.join(dashboardPath, 'library.html')));
+app.get('/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'queue.html')));
+app.get('/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'settings.html')));
+app.get('/success', (req, res) => res.sendFile(path.join(dashboardPath, 'success.html')));
 
 // Ruta para recibir proyectos y notificar
 app.post('/api/generate-video', (req, res) => {
-  const { tema, plataforma = 'HeyGen' } = req.body;
+  const { tema, audience, villain, solution, unique_message, influencer_id, plataforma = 'HeyGen' } = req.body;
   
   if (!tema) {
     return res.status(400).json({ error: "Falta el campo 'tema'." });
   }
 
   // Enviar mensaje por Telegram de aviso inicial
-  const messageInitial = `🚀 Nuevo proyecto recibido: ${tema}. Generando guion...`;
+  const messageInitial = `🚀 Nuevo proyecto recibido: ${tema}.\nAudiencia: ${audience || 'N/A'}\nPlataforma: ${plataforma}\nGenerando guion...`;
   if (chatId && process.env.TELEGRAM_TOKEN) {
     bot.telegram.sendMessage(chatId, messageInitial).catch(console.error);
   } else {
     console.log("Notificación Inicial (Simulada):", messageInitial);
   }
 
-  // Generar el guion cinematográfico
+  // Generar el guion cinematográfico (se podría adaptar el motor para usar los nuevos campos)
   const final_script = scriptEngine.generateScript(tema, plataforma);
 
   // Guardar en JSON (projects.json)
   const projectId = Date.now().toString();
   const projectData = { 
     id: projectId,
-    tema, 
+    tema,
+    audience,
+    villain,
+    solution,
+    unique_message,
+    influencer_id,
     plataforma,
     final_script,
     status: 'PENDING',

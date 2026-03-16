@@ -266,29 +266,108 @@
 </div>
 </div></div>
 </main>
+<div id="videoModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-primary/10">
+    <div class="p-6">
+      <h2 class="text-2xl font-bold text-primary mb-4">Nueva Orquestación de Video</h2>
+      <form id="videoForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Tema (Topic)</label>
+          <input type="text" id="topic" required class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" placeholder="Ej: Respiración 4-7-8">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Audiencia (Audience)</label>
+          <input type="text" id="audience" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" placeholder="Ej: Empleados con burnout">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">El Dolor (Villain)</label>
+          <input type="text" id="villain" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" placeholder="Ej: Insomnio crónico">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">La Solución (Solution)</label>
+          <input type="text" id="solution" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" placeholder="Ej: Protocolo de sueño Aethel">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Mensaje Único (Unique Message)</label>
+          <input type="text" id="unique_message" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" placeholder="Ej: La ciencia detrás de la paz">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Influencer ID</label>
+            <input type="text" id="influencer_id" value="default" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Plataforma</label>
+            <select id="platform" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+              <option value="HeyGen">HeyGen</option>
+              <option value="Kling">Kling</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" id="closeModal" class="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">Cancelar</button>
+          <button type="submit" id="submitBtn" class="px-4 py-2 text-sm font-medium text-white bg-[#1B3A2B] hover:bg-[#152e22] rounded-lg shadow-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">send</span> Enviar a Fábrica
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <script>
-  document.querySelector('.bg-\\[\\#1B3A2B\\]').addEventListener('click', async () => {
-    const tema = prompt('Ingresa el tema del nuevo video:');
-    if (!tema) return;
+  const modal = document.getElementById('videoModal');
+  const openBtn = document.querySelector('.bg-\\[\\#1B3A2B\\]'); // El botón principal de Generar Video
+  const closeBtn = document.getElementById('closeModal');
+  const form = document.getElementById('videoForm');
+  const submitBtn = document.getElementById('submitBtn');
+
+  openBtn.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      tema: document.getElementById('topic').value,
+      audience: document.getElementById('audience').value,
+      villain: document.getElementById('villain').value,
+      solution: document.getElementById('solution').value,
+      unique_message: document.getElementById('unique_message').value,
+      influencer_id: document.getElementById('influencer_id').value,
+      plataforma: document.getElementById('platform').value,
+    };
+
     try {
-      const btn = document.querySelector('.bg-\\[\\#1B3A2B\\]');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = 'Generando...';
+      const originalHtml = submitBtn.innerHTML;
+      submitBtn.innerHTML = 'Procesando...';
+      submitBtn.disabled = true;
+
       const response = await fetch('/api/generate-video', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ tema })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
+      
       const data = await response.json();
-      btn.innerHTML = originalText;
+      submitBtn.innerHTML = originalHtml;
+      submitBtn.disabled = false;
+      
       if(data.success) {
-        alert('Video enviado a producción. Revisa tu Telegram.');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        form.reset();
+        alert('Producción iniciada enviada. Revisa Telegram para la aprobación final.');
       }
     } catch(err) {
       console.error(err);
-      alert('Error de conexión');
+      alert('Error de conexión con la fábrica');
+      submitBtn.disabled = false;
     }
   });
 </script>
