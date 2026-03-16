@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
-const { Telegraf } = require('telegraf');
+const { Telegraf, Markup } = require('telegraf');
 require('dotenv').config();
 const scriptEngine = require('./script_engine');
 
@@ -40,10 +40,13 @@ app.post('/api/generate-video', (req, res) => {
   const final_script = scriptEngine.generateScript(tema, plataforma);
 
   // Guardar en JSON (projects.json)
+  const projectId = Date.now().toString();
   const projectData = { 
+    id: projectId,
     tema, 
     plataforma,
     final_script,
+    status: 'PENDING',
     timestamp: new Date().toISOString() 
   };
   const jsonFilePath = 'projects.json';
@@ -66,7 +69,12 @@ app.post('/api/generate-video', (req, res) => {
   const messageFinal = `📝 ¡Guion Redactado!\nTema: ${tema}\nVista previa: ${preview}...\n¿Procedemos con la generación de voz?`;
   
   if (chatId && process.env.TELEGRAM_TOKEN) {
-    bot.telegram.sendMessage(chatId, messageFinal).catch(console.error);
+    bot.telegram.sendMessage(chatId, messageFinal, {
+      ...Markup.inlineKeyboard([
+        Markup.button.callback('✅ APROBAR', `approve_${projectId}`),
+        Markup.button.callback('🔄 REGENERAR', `regenerate_${projectId}`)
+      ])
+    }).catch(console.error);
   } else {
     console.log("Notificación Final (Simulada):", messageFinal);
   }
@@ -74,11 +82,67 @@ app.post('/api/generate-video', (req, res) => {
   res.json({ success: true, message: "Proyecto recibido, guion generado y notificado.", project: projectData });
 });
 
+// Manejo de acciones en Telegram (Human-in-the-loop)
+if (process.env.TELEGRAM_TOKEN) {
+  bot.action(/approve_(.+)/, (ctx) => {
+    const projectId = ctx.match[1];
+    
+    const jsonFilePath = 'projects.json';
+    if (fs.existsSync(jsonFilePath)) {
+      const data = fs.readFileSync(jsonFilePath, 'utf8');
+      let projects = JSON.parse(data);
+      const projectIndex = projects.findIndex(p => p.id === projectId);
+      
+      if (projectIndex !== -1) {
+        projects[projectIndex].status = 'READY_TO_RENDER';
+        fs.writeFileSync(jsonFilePath, JSON.stringify(projects, null, 2));
+        ctx.reply(`Entendido, jefe. El proyecto ${projectId} ha sido aprobado.`).catch(console.error);
+      } else {
+        ctx.reply(`No encontré el proyecto con ID ${projectId}.`).catch(console.error);
+      }
+    }
+    ctx.answerCbQuery();
+  });
+
+  bot.action(/regenerate_(.+)/, (ctx) => {
+    const projectId = ctx.match[1];
+    ctx.reply("Re-escribiendo guion... dame 5 segundos.").catch(console.error);
+    
+    const jsonFilePath = 'projects.json';
+    if (fs.existsSync(jsonFilePath)) {
+      const data = fs.readFileSync(jsonFilePath, 'utf8');
+      let projects = JSON.parse(data);
+      const projectIndex = projects.findIndex(p => p.id === projectId);
+        
+      if (projectIndex !== -1) {
+        const project = projects[projectIndex];
+        // General nuevo script
+        const final_script = scriptEngine.generateScript(project.tema, project.plataforma);
+        projects[projectIndex].final_script = final_script;
+        projects[projectIndex].status = 'PENDING';
+        fs.writeFileSync(jsonFilePath, JSON.stringify(projects, null, 2));
+        
+        const preview = final_script.split(' ').slice(0, 20).join(' ');
+        const messageFinal = `📝 ¡Nuevo Guion Redactado!\nTema: ${project.tema}\nVista previa: ${preview}...\n¿Procedemos?`;
+        
+        ctx.reply(messageFinal, {
+          ...Markup.inlineKeyboard([
+            Markup.button.callback('✅ APROBAR', `approve_${projectId}`),
+            Markup.button.callback('🔄 REGENERAR', `regenerate_${projectId}`)
+          ])
+        }).catch(console.error);
+      }
+    }
+    ctx.answerCbQuery();
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   
   // Enviar mensaje automático al arrancar
   if (chatId && process.env.TELEGRAM_TOKEN) {
+    bot.launch(); // Iniciar polling para recibir interacciones
     bot.telegram.sendMessage(chatId, '🌿 Conexión Exitosa: La Fábrica Aethel Well está en línea y lista para procesar bienestar.')
       .catch(console.error);
   } else {

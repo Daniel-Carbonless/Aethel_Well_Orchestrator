@@ -41,12 +41,11 @@ function generateScript(tema, plataforma) {
         "Tu bienestar no es negociable. Únete a la revolución Aethel Well."
     ];
 
-    // Selección semi-aleatoria basada en la longitud del tema para que no sea siempre igual
-    const len = tema.length;
-    const hook = hooks[len % hooks.length];
-    const villain = villains[(len + 1) % villains.length];
-    const solution = solutions[(len + 2) % solutions.length];
-    const cta = ctas[(len + 3) % ctas.length];
+    // Selección aleatoria para que regeneraciones sean distintas
+    const hook = hooks[Math.floor(Math.random() * hooks.length)];
+    const villain = villains[Math.floor(Math.random() * villains.length)];
+    const solution = solutions[Math.floor(Math.random() * solutions.length)];
+    const cta = ctas[Math.floor(Math.random() * ctas.length)];
 
     if (plataforma.toLowerCase() === 'heygen') {
         script = `${hook} [breath] ${villain} [breath] ${solution} [breath] ${cta}`;
