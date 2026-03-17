@@ -37,45 +37,70 @@
         .sidebar-fixed {
             width: 250px;
         }
-    </style>
+    
+        .active-link {
+            background-color: rgba(28, 59, 44, 0.1);
+            color: #1c3b2c !important;
+            border-right: 3px solid #1c3b2c;
+            font-weight: 700 !important;
+        }
+</style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
 <!-- Fixed Sidebar -->
-<aside class="sidebar-fixed h-screen border-r border-primary/10 bg-white dark:bg-background-dark flex flex-col fixed left-0 top-0">
-<div class="p-6 flex flex-col gap-1">
-<h1 class="text-primary dark:text-primary/80 text-xl font-bold flex items-center gap-2">
-<span class="material-symbols-outlined">spa</span>
-                Aethel Well
-            </h1>
-<p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Plataforma de Bienestar</p>
+<aside class="sidebar-fixed bg-white border-r border-slate-200 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">eco</span>
 </div>
-<nav class="flex-1 px-3 py-4 space-y-1">
-<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="/">
-<span class="material-symbols-outlined">home</span>
-<span class="text-sm font-medium">Inicio</span>
+<div>
+<h1 class="font-bold text-primary leading-tight">Aethel Well</h1>
+<p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Factory System</p>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg  transition-colors text-slate-600 hover:bg-slate-50 hover:text-primary" href="/">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm font-medium">Panel de Control</span>
+</a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" href="/library">
+<span class="material-symbols-outlined text-[22px]">folder_open</span>
+<span class="text-sm font-medium">Biblioteca</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="/library">
-<span class="material-symbols-outlined">play_circle</span>
-<span class="text-sm font-medium">Contenido</span>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" href="/queue">
+<span class="material-symbols-outlined text-[22px]">auto_awesome</span>
+<span class="text-sm font-medium">Cola de Creación</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="/analytics">
-<span class="material-symbols-outlined">bar_chart_4_bars</span>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" href="/calendar">
+<span class="material-symbols-outlined text-[22px]">calendar_month</span>
+<span class="text-sm font-medium">Calendario de Contenido</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" href="/performance">
+<span class="material-symbols-outlined text-[22px]">trending_up</span>
+<span class="text-sm font-medium">Rendimiento</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" href="/team">
+<span class="material-symbols-outlined text-[22px]">diversity_3</span>
+<span class="text-sm font-medium">Equipo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" href="/analytics">
+<span class="material-symbols-outlined text-[22px]">insights</span>
 <span class="text-sm font-medium">Analíticas</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-md" href="/settings">
-<span class="material-symbols-outlined">settings</span>
-<span class="text-sm font-medium">Configuración</span>
-</a>
 </nav>
-<div class="p-4 border-t border-primary/10">
-<div class="flex items-center gap-3 px-2">
-<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center">
-<span class="material-symbols-outlined text-primary">person</span>
+<div class="p-4 border-t border-slate-100">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" class="flex items-center gap-3 px-3 py-2.5 rounded-lg active-link transition-colors" href="/settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm font-medium">Configuración</span>
+</a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-600 transition-colors" href="/help"><span class="material-symbols-outlined text-[22px]">help</span><span class="text-sm font-medium">Ayuda</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors" href="/logout"><span class="material-symbols-outlined text-[22px]">logout</span><span class="text-sm font-medium">Cerrar Sesión</span></a>
+<div class="mt-4 flex items-center gap-3 p-2 rounded-xl bg-slate-50">
+<div class="size-8 rounded-full overflow-hidden bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm">person</span>
 </div>
-<div class="flex flex-col">
-<span class="text-sm font-bold truncate">Admin User</span>
-<span class="text-xs text-slate-500 truncate">Pro Plan</span>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold text-slate-900 truncate">Totok Michael</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tight">Líder de Contenido</p>
 </div>
+<span class="material-symbols-outlined text-slate-400 text-sm">unfold_more</span>
 </div>
 </div>
 </aside>
@@ -248,5 +273,5 @@
     </div>
   </div>
 </div>
-<script src="/js/app.js"></script>
+<script src="/js/core.js"></script>
 </body></html>
