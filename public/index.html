@@ -151,20 +151,20 @@
 <div class="bg-white/10 p-2 rounded-lg text-white">
 <span class="material-symbols-outlined">video_library</span>
 </div>
-<span class="text-xs font-bold text-white bg-white/20 px-2 py-1 rounded">Actividad</span>
+<span class="text-xs font-bold text-white bg-white/20 px-2 py-1 rounded">+5 este mes</span>
 </div>
-<p class="text-white/70 text-sm font-medium">Total de videos</p>
-<h3 id="stat-total" class="text-2xl font-bold text-white mt-1">-</h3>
+<p class="text-2xl font-bold text-white mt-1">Total de videos</p>
+<h3 id="stat-total" class="2,400">-</h3>
 </div>
 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
 <div class="flex justify-between items-start mb-4">
 <div class="bg-primary/10 p-2 rounded-lg text-primary">
 <span class="material-symbols-outlined">fact_check</span>
 </div>
-<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Acción Mínima</span>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">+3 este mes</span>
 </div>
-<p class="text-slate-500 text-sm font-medium">Listos para revisión</p>
-<h3 id="stat-ready" class="text-2xl font-bold text-slate-900 mt-1">-</h3>
+<p class="text-2xl font-bold text-slate-900 mt-1">Listos para revisión</p>
+<h3 id="stat-ready" class="15">-</h3>
 </div>
 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
 <div class="flex justify-between items-start mb-4">
@@ -173,8 +173,8 @@
 </div>
 <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded">Generando...</span>
 </div>
-<p class="text-slate-500 text-sm font-medium">En Proceso</p>
-<h3 id="stat-process" class="text-2xl font-bold text-slate-900 mt-1">-</h3>
+<p class="text-2xl font-bold text-slate-900 mt-1">En Proceso</p>
+<h3 id="stat-process" class="13">-</h3>
 </div>
 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
 <div class="flex justify-between items-start mb-4">
@@ -183,8 +183,8 @@
 </div>
 <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Pendientes</span>
 </div>
-<p class="text-slate-500 text-sm font-medium">En Cola</p>
-<h3 id="stat-pending" class="text-2xl font-bold text-slate-900 mt-1">-</h3>
+<p class="text-2xl font-bold text-slate-900 mt-1">En Cola</p>
+<h3 id="stat-pending" class="2">-</h3>
 </div>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -192,10 +192,25 @@
 <div class="lg:col-span-2 bg-white border border-slate-200 rounded-[20px] p-6 shadow-sm flex flex-col">
 <div class="flex justify-between items-center mb-6">
 <h2 class="text-lg font-bold text-slate-900">Cola de Revisión de Video</h2>
-<span id="stat-pending-review" class="text-xs font-semibold text-primary bg-primary/5 px-3 py-1 rounded-full">- pendientes</span>
+<span class="text-xs font-semibold text-primary bg-primary/5 px-3 py-1 rounded-full">4 pendientes</span>
 </div>
-<div id="review-queue-container" class="flex-1 flex flex-col justify-center items-center py-8 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
-<!-- Dynamic projects will load here -->
+<div class="flex-1 flex flex-col justify-center items-center py-8 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50"><div id="review-queue-container" class="w-full"></div>
+<div class="w-full max-w-md bg-white p-4 rounded-xl border border-slate-100 shadow-sm mb-6">
+<div class="flex items-center gap-4">
+<div class="size-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined">movie</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900">Video #A4: El Poder de la Respiración</p>
+<p class="text-xs text-slate-500">Listo para aprobación final</p>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded">Borrador v2</span>
+</div>
+</div>
+<button class="flex items-center gap-2 bg-[#1B3A2B] text-white px-8 py-4 rounded-full font-bold shadow-lg hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">send</span>
+                Revisar en Telegram
+            </button>
 </div>
 </div>
 <!-- Right Column: Stats & Progress -->
@@ -251,6 +266,7 @@
 </div>
 </div></div>
 </main>
+
 <div id="videoModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
   <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-primary/10">
     <div class="p-6">
@@ -299,6 +315,7 @@
     </div>
   </div>
 </div>
+
 <script>
   const modal = document.getElementById('videoModal');
   const form = document.getElementById('videoForm');
