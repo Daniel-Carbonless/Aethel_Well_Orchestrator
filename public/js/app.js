@@ -23,6 +23,8 @@ async function loadLibraryProjects() {
                 let statusBadge = '<span class="text-slate-400 text-xs font-medium px-2 py-1 rounded bg-slate-100">' + (p.status || 'PENDING') + '</span>';
                 if (p.status === 'PENDIENTE' || p.status === 'PENDING') {
                     statusBadge = '<span class="text-amber-700 text-xs font-bold px-2 py-1 rounded bg-amber-100">PENDIENTE</span>';
+                } else if (p.status === 'IN_PRODUCTION') {
+                    statusBadge = '<span class="text-blue-700 text-xs font-bold px-2 py-1 rounded bg-blue-100 flex items-center gap-1 w-fit"><span class="material-symbols-outlined text-[14px] animate-spin">sync</span> PROCESANDO</span>';
                 } else if (p.status === 'APROBADO' || p.status === 'READY_TO_RENDER' || p.status === 'APPROVED') {
                     statusBadge = '<span class="text-green-700 text-xs font-bold px-2 py-1 rounded bg-green-100">APROBADO</span>';
                 }
@@ -81,8 +83,8 @@ async function loadQueueProjects() {
               let dotClass = 'bg-slate-400';
               let statusText = p.status || 'PENDING';
               if (p.status === 'PENDING' || p.status === 'PENDIENTE') { badgeClass = 'bg-amber-100 text-amber-700'; dotClass = 'bg-amber-500'; statusText = 'Pendiente'; }
+              else if (p.status === 'IN_PRODUCTION' || p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500 animate-pulse'; statusText = 'Renderizando API'; }
               else if (p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = 'Aprobado'; }
-              else if (p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500'; statusText = 'Creando Clips'; }
               const row = document.createElement('tr');
               row.className = 'hover:bg-primary/[0.02] dark:hover:bg-primary/[0.05] transition-colors';
               row.innerHTML = `

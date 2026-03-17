@@ -195,9 +195,14 @@ if (process.env.TELEGRAM_TOKEN) {
       const projectIndex = projects.findIndex(p => p.id === projectId);
       
       if (projectIndex !== -1) {
-        projects[projectIndex].status = 'READY_TO_RENDER';
+        projects[projectIndex].status = 'IN_PRODUCTION';
         fs.writeFileSync(jsonFilePath, JSON.stringify(projects, null, 2));
-        ctx.reply(`Entendido, jefe. El proyecto ${projectId} ha sido aprobado.`).catch(console.error);
+        
+        // Trigger Video Engine
+        const videoEngine = require('./video_engine');
+        videoEngine.processVideo(projects[projectIndex]).catch(err => console.error("Video engine error:", err));
+
+        ctx.reply(`Entendido, jefe. El proyecto ${projectId} ha entrado a producción.`).catch(console.error);
       } else {
         ctx.reply(`No encontré el proyecto con ID ${projectId}.`).catch(console.error);
       }

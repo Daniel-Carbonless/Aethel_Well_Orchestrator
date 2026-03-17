@@ -1,23 +1,56 @@
-const fs = require('fs');
-const path = require('path');
-const indexFile = path.join(__dirname, 'public', 'index.html');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Aethel Well - Próximamente</title>
+<style>
+        .active-link {
+            background-color: rgba(28, 59, 44, 0.1);
+            color: #1c3b2c !important;
+            border-right: 3px solid #1c3b2c;
+            font-weight: 700 !important;
+        }
+</style></head>
+<body>
+<main class="main-content flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="h-16 border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-8">
+        <div class="flex items-center gap-2 text-slate-500">
+            <span class="text-sm font-medium">Panel</span>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-sm font-medium text-slate-900 dark:text-slate-100">En Construcción</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="size-10 flex items-center justify-center rounded-full hover:bg-primary/5 transition-colors relative">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <div class="h-8 w-px bg-primary/10"></div>
+            <div class="size-8 rounded-lg bg-primary overflow-hidden">
+                <div class="w-full h-full bg-gradient-to-br from-primary to-emerald-800"></div>
+            </div>
+        </div>
+    </header>
 
-let content = fs.readFileSync(indexFile, 'utf8');
+    <!-- Content -->
+    <div class="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-700">
+        <div class="size-24 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-5xl">construction</span>
+        </div>
+        <h2 class="text-3xl font-black text-slate-900 dark:text-slate-100 mb-4 tracking-tight">Sección en Construcción</h2>
+        <p class="text-slate-500 max-w-md mx-auto mb-8 leading-relaxed">
+            Nuestros ingenieros en la fábrica Aethel Well están ensamblando cuidadosamente los engranajes de esta sección. ¡Estará disponible en la próxima actualización!
+        </p>
+        <button onclick="window.history.pushState({}, '', '/'); loadPage('/');" class="bg-primary text-white hover:bg-emerald-900 px-8 py-3 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-1 flex items-center gap-2">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Volver al Panel Principal
+        </button>
+    </div>
+</main>
 
-// 1. Hide the tracking toast and give it an ID
-content = content.replace(
-    '<div class="fixed top-20 right-8 z-50 bg-[#1B3A2B] text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">',
-    '<div id="success-toast" class="hidden fixed top-20 right-8 z-50 bg-[#1B3A2B] text-white px-4 py-3 rounded-xl shadow-2xl items-center gap-3 animate-bounce">'
-);
-
-// 2. Add onclick to Generar Video button
-content = content.replace(
-    '<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 rounded-full shadow-md px-6 bg-[#1B3A2B]"><span class="material-symbols-outlined text-[18px]">add</span> Generar Video</button>',
-    '<button id="openModalBtn" onclick="document.getElementById(\\'videoModal\\').classList.remove(\\'hidden\\'); document.getElementById(\\'videoModal\\').classList.add(\\'flex\\');" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 rounded-full shadow-md px-6 bg-[#1B3A2B] whitespace-nowrap"><span class="material-symbols-outlined text-[18px]">add</span> Generar Video</button>'
-);
-
-// 3. Inject the modal before <script> or at the end of body
-const modalHTML = `
+<div id="success-toast" class="hidden fixed top-20 right-8 z-50 bg-[#1B3A2B] text-white px-4 py-3 rounded-xl shadow-2xl items-center gap-3 animate-bounce">
+<span class="material-symbols-outlined text-amber-400">rocket_launch</span>
+<p class="text-sm font-medium">¡Recibido! Procesando guion en la Fábrica...</p>
+</div>
 <div id="videoModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
   <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-primary/10">
     <div class="p-6">
@@ -57,7 +90,7 @@ const modalHTML = `
           </div>
         </div>
         <div class="mt-6 flex justify-end gap-3">
-          <button type="button" id="closeModal" onclick="document.getElementById('videoModal').classList.add('hidden'); document.getElementById('videoModal').classList.remove('flex');" class="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">Cancelar</button>
+          <button type="button" id="closeModal" class="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">Cancelar</button>
           <button type="submit" id="submitBtn" class="px-4 py-2 text-sm font-medium text-white bg-[#1B3A2B] hover:bg-[#152e22] rounded-lg shadow-sm flex items-center gap-2">
             <span class="material-symbols-outlined text-[18px]">send</span> Enviar a Fábrica
           </button>
@@ -66,17 +99,6 @@ const modalHTML = `
     </div>
   </div>
 </div>
-`;
-
-if (!content.includes('id="videoModal"')) {
-    content = content.replace('</body>', `${modalHTML}\n</body>`);
-}
-
-// 4. Update the toast display logic in the script block
-content = content.replace(
-    "modal.classList.add('hidden');",
-    "modal.classList.add('hidden');\n        document.getElementById('success-toast').classList.remove('hidden');\n        document.getElementById('success-toast').classList.add('flex');\n        setTimeout(() => { document.getElementById('success-toast').classList.add('hidden'); document.getElementById('success-toast').classList.remove('flex'); }, 5000);"
-);
-
-fs.writeFileSync(indexFile, content, 'utf8');
-console.log("Patched index.html with JS fixes and Modal.");
+<script src="/js/app.js"></script>
+</body>
+</html>
