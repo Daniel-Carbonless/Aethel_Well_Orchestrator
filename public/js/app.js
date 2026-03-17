@@ -20,6 +20,13 @@ async function loadLibraryProjects() {
                 if(plat.toLowerCase().includes('tiktok')) icon = 'music_note';
                 else if(plat.toLowerCase().includes('instagram')) icon = 'camera_alt';
                 else icon = 'play_circle';
+                let statusBadge = '<span class="text-slate-400 text-xs font-medium px-2 py-1 rounded bg-slate-100">' + (p.status || 'PENDING') + '</span>';
+                if (p.status === 'PENDIENTE' || p.status === 'PENDING') {
+                    statusBadge = '<span class="text-amber-700 text-xs font-bold px-2 py-1 rounded bg-amber-100">PENDIENTE</span>';
+                } else if (p.status === 'APROBADO' || p.status === 'READY_TO_RENDER' || p.status === 'APPROVED') {
+                    statusBadge = '<span class="text-green-700 text-xs font-bold px-2 py-1 rounded bg-green-100">APROBADO</span>';
+                }
+
                 card.innerHTML = `<div class="relative aspect-video overflow-hidden">
 <div class="absolute inset-0 bg-center bg-cover transition-transform duration-500 group-hover:scale-110" style="background-image: url('${bgImage}');"></div>
 <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-2 shadow-sm">
@@ -34,11 +41,14 @@ async function loadLibraryProjects() {
 </div>
 <div class="p-6">
 <div class="flex justify-between items-start mb-2">
-<h3 class="text-xl font-bold text-primary tracking-tight truncate pr-2">${p.tema}</h3>
-<span class="text-slate-400 text-xs font-medium px-2 py-1 rounded bg-slate-100">${p.status || 'PENDING'}</span>
+<div class="flex flex-col">
+  <span class="text-xs text-slate-400 mb-1">ID: #${p.id ? p.id.slice(-4) : '0000'}</span>
+  <h3 class="text-xl font-bold text-primary tracking-tight truncate pr-2">${p.tema}</h3>
+</div>
+${statusBadge}
 </div>
 <p class="text-slate-500 text-sm mb-6 flex items-center gap-1">
-<span class="material-symbols-outlined text-xs">calendar_month</span> ${new Date(p.timestamp).toLocaleDateString()}
+<span class="material-symbols-outlined text-xs">calendar_month</span> ${new Date(p.timestamp || Date.now()).toLocaleDateString()}
 </p>
 <div class="grid grid-cols-2 gap-3">
 <button class="flex items-center justify-center gap-2 py-3 bg-primary rounded-xl text-white text-xs font-bold hover:bg-opacity-95 transition-all">
@@ -70,8 +80,8 @@ async function loadQueueProjects() {
               let badgeClass = 'bg-slate-100 text-slate-600';
               let dotClass = 'bg-slate-400';
               let statusText = p.status || 'PENDING';
-              if (p.status === 'PENDING') { badgeClass = 'bg-purple-100 text-purple-700'; dotClass = 'bg-purple-500'; statusText = 'Esperando Aprobación'; }
-              else if (p.status === 'READY_TO_RENDER') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = 'Listo para Render'; }
+              if (p.status === 'PENDING' || p.status === 'PENDIENTE') { badgeClass = 'bg-amber-100 text-amber-700'; dotClass = 'bg-amber-500'; statusText = 'Pendiente'; }
+              else if (p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = 'Aprobado'; }
               else if (p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500'; statusText = 'Creando Clips'; }
               const row = document.createElement('tr');
               row.className = 'hover:bg-primary/[0.02] dark:hover:bg-primary/[0.05] transition-colors';
@@ -79,11 +89,11 @@ async function loadQueueProjects() {
                 <td class="px-6 py-4">
                   <div class="flex flex-col">
                     <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">${p.tema}</span>
-                    <span class="text-xs text-slate-400">ID: #${p.id.slice(-4)}</span>
+                    <span class="text-xs text-slate-400">ID: #${p.id ? p.id.slice(-4) : '0000'}</span>
                   </div>
                 </td>
                 <td class="px-6 py-4">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">
                     <span class="size-1.5 rounded-full ${dotClass} mr-1.5"></span>
                     ${statusText}
                   </span>
@@ -166,18 +176,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Highlight sidebar
     document.querySelectorAll('aside a').forEach(a => {
         const href = a.getAttribute('href');
-        a.className = "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors";
+        // Clean up classes
+        a.classList.remove('active-link');
         
         if (href === path || (path === '' && href === '/')) {
-            if (href === '/') {
-                a.classList.add('bg-primary/10', 'text-primary', 'border-r-4', 'border-primary'); 
-            } else if (href === '/queue') {
-                a.classList.add('bg-primary', 'text-white', 'shadow-sm');
-            } else {
-                 a.classList.add('bg-primary/5', 'text-primary'); 
-            }
+            a.classList.add('active-link');
         } else {
-            a.classList.add('text-slate-600', 'hover:bg-primary/5');
+            a.classList.remove('active-link');
+            if(!a.className.includes('text-slate-600') && !a.className.includes('text-red-600')) {
+                a.classList.add('text-slate-600', 'hover:bg-slate-50', 'hover:text-primary');
+            }
         }
     });
 
