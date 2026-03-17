@@ -129,7 +129,7 @@
 <span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white"></span>
 </button>
 <div class="h-6 w-px bg-slate-200 mx-2"></div>
-<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 rounded-full shadow-md px-6 bg-[#1B3A2B]"><span class="material-symbols-outlined text-[18px]">add</span> Generar Video</button>
+<button onclick="document.getElementById('videoModal').classList.remove('hidden'); document.getElementById('videoModal').classList.add('flex');" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 rounded-full shadow-md px-6 bg-[#1B3A2B]"><span class="material-symbols-outlined text-[18px]">add</span> Generar Video</button>
 </div>
 </header>
 <div class="p-8 space-y-8 max-w-7xl mx-auto w-full">
@@ -142,7 +142,7 @@
 <h1 class="text-3xl font-black text-slate-900 tracking-tight text-4xl font-extrabold">Aethel Well - Dashboard de Video</h1>
 <p class="text-slate-600 max-w-2xl">Planifica, genera y sigue tu contenido de bienestar con facilidad.</p>
 </div>
-<div class="fixed top-20 right-8 z-50 bg-[#1B3A2B] text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
+<div id="success-toast" class="hidden fixed top-20 right-8 z-50 bg-[#1B3A2B] text-white px-4 py-3 rounded-xl shadow-2xl items-center gap-3 animate-bounce">
 <span class="material-symbols-outlined text-amber-400">rocket_launch</span>
 <p class="text-sm font-medium">¡Recibido! Procesando guion en la Fábrica...</p>
 </div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -616,7 +616,17 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         form.reset();
-        alert('Producción iniciada via API. Revisa Telegram para la aprobación.');
+        
+        const toast = document.getElementById('success-toast');
+        if (toast) {
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 5000);
+        }
+
         if (window.location.pathname === '/library') {
           loadLibraryProjects();
         }
