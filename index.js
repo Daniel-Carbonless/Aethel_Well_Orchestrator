@@ -22,18 +22,16 @@ const path = require('path');
 const dashboardPath = path.join(__dirname, 'public');
 app.use(express.static(dashboardPath));
 
-// Rutas de Vistas Originales para SPA fetch
-app.get('/views/index', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
-app.get('/views/library', (req, res) => res.sendFile(path.join(dashboardPath, 'library.html')));
-app.get('/views/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'queue.html')));
-app.get('/views/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'settings.html')));
-app.get('/views/success', (req, res) => res.sendFile(path.join(dashboardPath, 'success.html')));
-
-app.get('/views/calendar', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
-app.get('/views/performance', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
-app.get('/views/team', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
-app.get('/views/analytics', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
-app.get('/views/help', (req, res) => res.sendFile(path.join(dashboardPath, 'coming-soon.html')));
+// Rutas limpias (Multi-page)
+app.get('/library', (req, res) => res.sendFile(path.join(dashboardPath, 'library.html')));
+app.get('/queue', (req, res) => res.sendFile(path.join(dashboardPath, 'queue.html')));
+app.get('/settings', (req, res) => res.sendFile(path.join(dashboardPath, 'settings.html')));
+app.get('/success', (req, res) => res.sendFile(path.join(dashboardPath, 'success.html')));
+app.get('/calendar', (req, res) => res.sendFile(path.join(dashboardPath, 'calendar.html')));
+app.get('/performance', (req, res) => res.sendFile(path.join(dashboardPath, 'performance.html')));
+app.get('/team', (req, res) => res.sendFile(path.join(dashboardPath, 'team.html')));
+app.get('/analytics', (req, res) => res.sendFile(path.join(dashboardPath, 'analytics.html')));
+app.get('/help', (req, res) => res.sendFile(path.join(dashboardPath, 'help.html')));
 
 // API: Listar Proyectos Recientes
 app.get('/api/projects', (req, res) => {
