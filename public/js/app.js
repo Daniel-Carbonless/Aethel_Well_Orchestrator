@@ -4,11 +4,11 @@ async function loadLibraryProjects() {
         const res = await fetch('/api/projects');
         const data = await res.json();
         const grids = document.querySelectorAll('.main-content .grid');
-        const container = grids[0];
+        const container = document.getElementById('library-grid-container') || grids[0];
         if (container) {
             container.innerHTML = '';
             if (data.projects.length === 0) {
-                container.innerHTML = '<div class="col-span-full border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center p-12 text-center group"><span class="material-symbols-outlined text-4xl text-primary/40 mb-4">video_library</span><h3 class="text-xl font-bold text-primary mb-2">Aún no hay videos</em><p class="text-slate-500">Comienza a generar contenido con la IA.</p></div>';
+                container.innerHTML = '<div class="col-span-full border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center p-12 text-center group"><span class="material-symbols-outlined text-4xl text-primary/40 mb-4">video_library</span><h3 class="text-xl font-bold text-primary mb-2">Aún no has creado ningún video</h3><p class="text-slate-500">Comienza a generar contenido con la IA.</p></div>';
                 return;
             }
             data.projects.forEach(p => {
@@ -44,7 +44,7 @@ async function loadLibraryProjects() {
 <div class="p-6">
 <div class="flex justify-between items-start mb-2">
 <div class="flex flex-col">
-  <span class="text-xs text-slate-400 mb-1">ID: #${p.id ? p.id.slice(-4) : '0000'}</span>
+  <span class="text-xs text-slate-400 mb-1">ID: ${p.id || '0000'}</span>
   <h3 class="text-xl font-bold text-primary tracking-tight truncate pr-2">${p.tema}</h3>
 </div>
 ${statusBadge}
@@ -83,7 +83,7 @@ async function loadQueueProjects() {
               let dotClass = 'bg-slate-400';
               let statusText = p.status || 'PENDING';
               if (p.status === 'PENDING' || p.status === 'PENDIENTE') { badgeClass = 'bg-amber-100 text-amber-700'; dotClass = 'bg-amber-500'; statusText = 'Pendiente'; }
-              else if (p.status === 'IN_PRODUCTION' || p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500 animate-pulse'; statusText = 'Renderizando API'; }
+              else if (p.status === 'IN_PRODUCTION' || p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500 animate-pulse'; statusText = 'MODO SIMULACIÓN: Esperando API Key'; }
               else if (p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = 'Aprobado'; }
               const row = document.createElement('tr');
               row.className = 'hover:bg-primary/[0.02] dark:hover:bg-primary/[0.05] transition-colors';
@@ -91,7 +91,7 @@ async function loadQueueProjects() {
                 <td class="px-6 py-4">
                   <div class="flex flex-col">
                     <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">${p.tema}</span>
-                    <span class="text-xs text-slate-400">ID: #${p.id ? p.id.slice(-4) : '0000'}</span>
+                    <span class="text-xs text-slate-400">ID: ${p.id || '0000'}</span>
                   </div>
                 </td>
                 <td class="px-6 py-4">
@@ -107,7 +107,7 @@ async function loadQueueProjects() {
                   </div>
                 </td>
                 <td class="px-6 py-4 text-right">
-                  <button class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-primary dark:text-slate-300 border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
+                  <button onclick="showScriptModal(this)" data-script="${(p.script || 'Sin guion').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&quot;/g, '&quot;').replace(/'/g, '&#039;')}" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-primary dark:text-slate-300 border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
                     Ver Guion
                   </button>
                 </td>
@@ -301,3 +301,23 @@ document.addEventListener('submit', async (e) => {
         }
     }
 });
+
+window.showScriptModal = function(btn) {
+    const scriptText = btn.getAttribute('data-script');
+    const modal = document.getElementById('scriptModal');
+    if (modal) {
+        const contentEl = document.getElementById('scriptModalContent');
+        if(contentEl) contentEl.innerText = scriptText;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    } else {
+        alert("Guion:\n\n" + scriptText);
+    }
+}
+window.closeScriptModal = function() {
+    const modal = document.getElementById('scriptModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}

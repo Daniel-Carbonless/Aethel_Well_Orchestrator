@@ -220,5 +220,20 @@
     </div>
   </div>
 </div>
+<div id="scriptModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-primary/10">
+    <div class="p-6">
+      <h2 class="text-2xl font-bold text-primary mb-4 flex items-center justify-between">
+        Guion Generado
+        <button onclick="closeScriptModal()" class="text-slate-400 hover:text-slate-600">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </h2>
+      <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg max-h-96 overflow-y-auto">
+        <p id="scriptModalContent" class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap"></p>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="/js/app.js"></script>
 </body></html>
