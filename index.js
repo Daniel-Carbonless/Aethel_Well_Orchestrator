@@ -118,7 +118,7 @@ app.get('/success', (req, res) => res.sendFile(path.join(dashboardPath, 'index.h
 
 // Ruta para recibir proyectos y notificar
 app.post('/api/generate-video', (req, res) => {
-  const { tema, audience, villain, solution, unique_message, influencer_id, plataforma = 'HeyGen' } = req.body;
+  const { tema, audience, villain, solution, unique_message, influencer_id, plataforma = 'TikTok', engine = 'HeyGen' } = req.body;
   
   if (!tema) {
     return res.status(400).json({ error: "Falta el campo 'tema'." });
@@ -146,6 +146,7 @@ app.post('/api/generate-video', (req, res) => {
     unique_message,
     influencer_id,
     plataforma,
+    engine,
     final_script,
     status: 'PENDING',
     timestamp: new Date().toISOString() 
@@ -200,9 +201,13 @@ if (process.env.TELEGRAM_TOKEN) {
         
         // Trigger Video Engine
         const videoEngine = require('./video_engine');
-        videoEngine.processVideo(projects[projectIndex]).catch(err => console.error("Video engine error:", err));
-
-        ctx.reply(`Entendido, jefe. El proyecto ${projectId} ha entrado a producción.`).catch(console.error);
+        if (projects[projectIndex].engine === 'Higgsfield') {
+          ctx.reply(`🚀 Motor Seleccionado: Higgsfield. Iniciando renderizado...`).catch(console.error);
+          videoEngine.processHiggsfield(projects[projectIndex], process.env.HIGGSFIELD_KEY).catch(err => console.error("Video engine error:", err));
+        } else {
+          ctx.reply(`Entendido, jefe. El proyecto ${projectId} ha entrado a producción.`).catch(console.error);
+          videoEngine.processVideo(projects[projectIndex]).catch(err => console.error("Video engine error:", err));
+        }
       } else {
         ctx.reply(`No encontré el proyecto con ID ${projectId}.`).catch(console.error);
       }

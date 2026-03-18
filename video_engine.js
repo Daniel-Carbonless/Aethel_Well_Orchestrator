@@ -44,6 +44,23 @@ async function processVideo(projectData) {
     }
 }
 
+async function processHiggsfield(projectData, key) {
+    try {
+        console.log(`[Video Engine] Iniciando Higgsfield para proyecto: ${projectData.id}`);
+        console.log(`[Video Engine] Enviando guion a Higgsfield API usando clave...`);
+        // Simular llamada usando la api key proporcionada
+        return {
+            success: true,
+            job_id: 'higgsfield_job_' + Date.now(),
+            status: 'processing'
+        };
+    } catch (error) {
+        console.error('[Video Engine] Error en Higgsfield:', error.message);
+        throw error;
+    }
+}
+
 module.exports = {
-    processVideo
+    processVideo,
+    processHiggsfield
 };

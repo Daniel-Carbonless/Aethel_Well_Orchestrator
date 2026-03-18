@@ -35,6 +35,9 @@ async function loadLibraryProjects() {
 <span class="material-symbols-outlined text-sm text-pink-600">${icon}</span>
 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-700">${plat}</span>
 </div>
+<div class="absolute top-4 right-4 bg-black/60 backdrop-blur px-2 py-1 rounded text-white text-[10px] font-bold shadow-sm">
+${p.engine || 'HeyGen'}
+</div>
 <div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
 <button class="h-12 w-12 bg-white rounded-full flex items-center justify-center text-primary shadow-xl">
 <span class="material-symbols-outlined">play_arrow</span>
@@ -105,6 +108,7 @@ async function loadQueueProjects() {
                     <span class="material-symbols-outlined text-lg">camera_roll</span>
                     ${p.plataforma}
                   </div>
+                  <div class="text-[10px] font-bold mt-1 text-slate-500 uppercase">${p.engine || 'HeyGen'}</div>
                 </td>
                 <td class="px-6 py-4 text-right">
                   <button onclick="showScriptModal(this)" data-script="${(p.script || 'Sin guion').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&quot;/g, '&quot;').replace(/'/g, '&#039;')}" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-primary dark:text-slate-300 border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
@@ -252,6 +256,7 @@ document.addEventListener('submit', async (e) => {
             unique_message: document.getElementById('unique_message')?.value,
             influencer_id: document.getElementById('influencer_id')?.value,
             plataforma: document.getElementById('platform')?.value,
+            engine: document.querySelector('input[name="engine"]:checked')?.value || 'HeyGen',
         };
 
         try {
