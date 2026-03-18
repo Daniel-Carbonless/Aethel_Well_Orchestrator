@@ -56,12 +56,17 @@ ${statusBadge}
 <span class="material-symbols-outlined text-xs">calendar_month</span> ${new Date(p.timestamp || Date.now()).toLocaleDateString()}
 </p>
 <div class="grid grid-cols-2 gap-3">
+${(p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED' || p.status === 'LISTO') ? `
 <button class="flex items-center justify-center gap-2 py-3 bg-primary rounded-xl text-white text-xs font-bold hover:bg-opacity-95 transition-all">
 <span class="material-symbols-outlined text-base">download</span> MP4
 </button>
 <button class="flex items-center justify-center gap-2 py-3 bg-accent-cream rounded-xl text-primary text-xs font-bold hover:bg-primary/10 transition-all">
 <span class="material-symbols-outlined text-base">content_copy</span> SEO
+</button>` : `
+<button onclick="checkProjectStatus('${p.id}')" class="col-span-2 flex items-center justify-center gap-2 py-3 bg-slate-100 rounded-xl text-slate-700 text-xs font-bold hover:bg-slate-200 transition-all">
+🔄 Actualizar Estado
 </button>
+`}
 </div>
 </div>`;
                 container.appendChild(card);
@@ -86,8 +91,8 @@ async function loadQueueProjects() {
               let dotClass = 'bg-slate-400';
               let statusText = p.status || 'PENDING';
               if (p.status === 'PENDING' || p.status === 'PENDIENTE') { badgeClass = 'bg-amber-100 text-amber-700'; dotClass = 'bg-amber-500'; statusText = 'Pendiente'; }
-              else if (p.status === 'IN_PRODUCTION' || p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500 animate-pulse'; statusText = '🚀 PRODUCCIÓN ACTIVA'; }
-              else if (p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = 'Aprobado'; }
+              else if (p.status === 'IN_PRODUCTION' || p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500 animate-pulse'; statusText = '⚙️ PROCESANDO EN NUBE...'; }
+              else if (p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED' || p.status === 'LISTO') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = '✅ LISTO'; }
               const row = document.createElement('tr');
               row.className = 'hover:bg-primary/[0.02] dark:hover:bg-primary/[0.05] transition-colors';
               row.innerHTML = `
@@ -111,6 +116,13 @@ async function loadQueueProjects() {
                   <div class="text-[10px] font-bold mt-1 text-slate-500 uppercase">${p.engine || 'HeyGen'}</div>
                 </td>
                 <td class="px-6 py-4 text-right">
+                  ${(p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED' || p.status === 'LISTO') ? `
+                    <button class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors mr-2">📥 Descargar MP4</button>
+                  ` : `
+                    <button onclick="checkProjectStatus('${p.id}')" class="inline-flex items-center px-3 py-1.5 text-[10px] font-bold text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors mr-2">
+                       🔄 Actualizar Estado
+                    </button>
+                  `}
                   <button onclick="showScriptModal(this)" data-script="${(p.script || 'Sin guion').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&quot;/g, '&quot;').replace(/'/g, '&#039;')}" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-primary dark:text-slate-300 border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
                     Ver Guion
                   </button>
@@ -325,4 +337,15 @@ window.closeScriptModal = function() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
+}
+window.checkProjectStatus = async function(id) {
+    try {
+        const res = await fetch(`/api/check-status/${id}`);
+        const data = await res.json();
+        if(data.success) {
+            if (window.location.pathname === '/library') loadLibraryProjects();
+            else if (window.location.pathname === '/queue') loadQueueProjects();
+            else loadDashboardStats();
+        }
+    } catch(e) { console.error(e); }
 }

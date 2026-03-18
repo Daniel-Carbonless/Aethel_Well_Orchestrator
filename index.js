@@ -17,6 +17,10 @@ const bot = new Telegraf(process.env.TELEGRAM_TOKEN || "NO_TOKEN_PROVIDED");
 const chatId = process.env.TELEGRAM_CHAT_ID;
 
 const path = require('path');
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
 // Servir la carpeta estática del dashboard
 const dashboardPath = path.join(__dirname, 'public');
@@ -35,7 +39,7 @@ app.get('/help', (req, res) => res.sendFile(path.join(dashboardPath, 'help.html'
 
 // API: Listar Proyectos Recientes
 app.get('/api/projects', (req, res) => {
-  const jsonFilePath = path.join(__dirname, 'projects.json');
+  const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
   if (fs.existsSync(jsonFilePath)) {
     try {
       const data = fs.readFileSync(jsonFilePath, 'utf8');
@@ -46,9 +50,26 @@ app.get('/api/projects', (req, res) => {
   }
 });
 
+// API: Check Status (Mock Higgsfield Check)
+app.get('/api/check-status/:id', (req, res) => {
+    const projectId = req.params.id;
+    const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
+    if (fs.existsSync(jsonFilePath)) {
+      let projects = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+      const index = projects.findIndex(p => p.id === projectId);
+      if (index !== -1) {
+          // Si estaba en produccion o simulación, lo asume listo. En un caso real llamaria a Higgsfield.
+          projects[index].status = 'LISTO';
+          fs.writeFileSync(jsonFilePath, JSON.stringify(projects, null, 2));
+          return res.json({ success: true, status: 'LISTO' });
+      }
+    }
+    res.json({ success: false });
+});
+
 // API: Obtener Estadísticas
 app.get('/api/stats', (req, res) => {
-  const jsonFilePath = path.join(__dirname, 'projects.json');
+  const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
   let projects = [];
   if (fs.existsSync(jsonFilePath)) {
     try {
@@ -151,7 +172,7 @@ app.post('/api/generate-video', (req, res) => {
     status: 'PENDING',
     timestamp: new Date().toISOString() 
   };
-  const jsonFilePath = path.join(__dirname, 'projects.json');
+  const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
   let projects = [];
   
   if (fs.existsSync(jsonFilePath)) {
@@ -189,7 +210,7 @@ if (process.env.TELEGRAM_TOKEN) {
   bot.action(/approve_(.+)/, (ctx) => {
     const projectId = ctx.match[1];
     
-    const jsonFilePath = path.join(__dirname, 'projects.json');
+    const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
     if (fs.existsSync(jsonFilePath)) {
       const data = fs.readFileSync(jsonFilePath, 'utf8');
       let projects = JSON.parse(data);
@@ -219,7 +240,7 @@ if (process.env.TELEGRAM_TOKEN) {
     const projectId = ctx.match[1];
     ctx.reply("Re-escribiendo guion... dame 5 segundos.").catch(console.error);
     
-    const jsonFilePath = path.join(__dirname, 'projects.json');
+    const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
     if (fs.existsSync(jsonFilePath)) {
       const data = fs.readFileSync(jsonFilePath, 'utf8');
       let projects = JSON.parse(data);
