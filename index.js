@@ -60,6 +60,7 @@ app.get('/api/check-status/:id', (req, res) => {
       if (index !== -1) {
           // Si estaba en produccion o simulación, lo asume listo. En un caso real llamaria a Higgsfield.
           projects[index].status = 'LISTO';
+          projects[index].videoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
           fs.writeFileSync(jsonFilePath, JSON.stringify(projects, null, 2));
           return res.json({ success: true, status: 'LISTO' });
       }
@@ -136,6 +137,46 @@ app.get('/team', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html
 app.get('/analytics', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 app.get('/help', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
 app.get('/success', (req, res) => res.sendFile(path.join(dashboardPath, 'index.html')));
+
+// Aprobación y Regeneración desde la Web
+app.post('/api/projects/:id/approve', (req, res) => {
+    const projectId = req.params.id;
+    const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
+    if (fs.existsSync(jsonFilePath)) {
+      let projects = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+      const index = projects.findIndex(p => p.id === projectId);
+      if (index !== -1) {
+        projects[index].status = 'IN_PRODUCTION';
+        fs.writeFileSync(jsonFilePath, JSON.stringify(projects, null, 2));
+        
+        const videoEngine = require('./video_engine');
+        if (projects[index].engine === 'Higgsfield') {
+          videoEngine.processHiggsfield(projects[index], process.env.HIGGSFIELD_KEY).catch(console.error);
+        } else {
+          videoEngine.processVideo(projects[index]).catch(console.error);
+        }
+        return res.json({ success: true });
+      }
+    }
+    res.json({ success: false });
+});
+
+app.post('/api/projects/:id/regenerate', (req, res) => {
+    const projectId = req.params.id;
+    const jsonFilePath = path.join(__dirname, 'data', 'projects.json');
+    if (fs.existsSync(jsonFilePath)) {
+      let projects = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+      const index = projects.findIndex(p => p.id === projectId);
+      if (index !== -1) {
+        const final_script = scriptEngine.generateScript(projects[index].tema, projects[index].plataforma);
+        projects[index].final_script = final_script;
+        projects[index].status = 'PENDING';
+        fs.writeFileSync(jsonFilePath, JSON.stringify(projects, null, 2));
+        return res.json({ success: true });
+      }
+    }
+    res.json({ success: false });
+});
 
 // Ruta para recibir proyectos y notificar
 app.post('/api/generate-video', (req, res) => {

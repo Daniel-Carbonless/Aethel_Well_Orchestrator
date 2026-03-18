@@ -39,16 +39,16 @@ async function loadLibraryProjects() {
 ${p.engine || 'HeyGen'}
 </div>
 <div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-<button class="h-12 w-12 bg-white rounded-full flex items-center justify-center text-primary shadow-xl">
+<button onclick="playVideo('${p.videoUrl}')" class="h-12 w-12 bg-white rounded-full flex items-center justify-center text-primary shadow-xl hover:scale-110 transition-transform">
 <span class="material-symbols-outlined">play_arrow</span>
 </button>
 </div>
 </div>
 <div class="p-6">
 <div class="flex justify-between items-start mb-2">
-<div class="flex flex-col">
-  <span class="text-xs text-slate-400 mb-1">ID: ${p.id || '0000'}</span>
-  <h3 class="text-xl font-bold text-primary tracking-tight truncate pr-2">${p.tema}</h3>
+<div class="flex-1 min-w-0 pr-2">
+  <span class="text-[10px] text-slate-400 font-mono">ID: ${p.id || '0000'}</span>
+  <h3 class="text-lg font-black text-primary tracking-tight truncate">${p.tema}</h3>
 </div>
 ${statusBadge}
 </div>
@@ -57,9 +57,9 @@ ${statusBadge}
 </p>
 <div class="grid grid-cols-2 gap-3">
 ${(p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED' || p.status === 'LISTO') ? `
-<button class="flex items-center justify-center gap-2 py-3 bg-primary rounded-xl text-white text-xs font-bold hover:bg-opacity-95 transition-all">
+<a href="${p.videoUrl || '#'}" target="_blank" class="flex items-center justify-center gap-2 py-3 bg-primary rounded-xl text-white text-xs font-bold hover:bg-opacity-95 transition-all">
 <span class="material-symbols-outlined text-base">download</span> MP4
-</button>
+</a>
 <button class="flex items-center justify-center gap-2 py-3 bg-accent-cream rounded-xl text-primary text-xs font-bold hover:bg-primary/10 transition-all">
 <span class="material-symbols-outlined text-base">content_copy</span> SEO
 </button>` : `
@@ -98,8 +98,8 @@ async function loadQueueProjects() {
               row.innerHTML = `
                 <td class="px-6 py-4">
                   <div class="flex flex-col">
-                    <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">${p.tema}</span>
-                    <span class="text-xs text-slate-400">ID: ${p.id || '0000'}</span>
+                    <span class="text-[10px] text-slate-400 font-mono mb-1">ID: ${p.id || '0000'}</span>
+                    <span class="text-sm font-black text-slate-800 dark:text-slate-200">${p.tema}</span>
                   </div>
                 </td>
                 <td class="px-6 py-4">
@@ -117,13 +117,13 @@ async function loadQueueProjects() {
                 </td>
                 <td class="px-6 py-4 text-right">
                   ${(p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED' || p.status === 'LISTO') ? `
-                    <button class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors mr-2">📥 Descargar MP4</button>
+                    <a href="${p.videoUrl || '#'}" target="_blank" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors mr-2">📥 Descargar MP4</a>
                   ` : `
                     <button onclick="checkProjectStatus('${p.id}')" class="inline-flex items-center px-3 py-1.5 text-[10px] font-bold text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors mr-2">
                        🔄 Actualizar Estado
                     </button>
                   `}
-                  <button onclick="showScriptModal(this)" data-script="${(p.script || 'Sin guion').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&quot;/g, '&quot;').replace(/'/g, '&#039;')}" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-primary dark:text-slate-300 border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
+                  <button onclick="showScriptModal(this)" data-id="${p.id}" data-status="${p.status}" data-script="${(p.script || p.final_script || 'Sin guion').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&quot;/g, '&quot;').replace(/'/g, '&#039;')}" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-primary dark:text-slate-300 border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
                     Ver Guion
                   </button>
                 </td>
@@ -321,10 +321,23 @@ document.addEventListener('submit', async (e) => {
 
 window.showScriptModal = function(btn) {
     const scriptText = btn.getAttribute('data-script');
+    const projectId = btn.getAttribute('data-id');
+    const projectStatus = btn.getAttribute('data-status');
     const modal = document.getElementById('scriptModal');
     if (modal) {
         const contentEl = document.getElementById('scriptModalContent');
         if(contentEl) contentEl.innerText = scriptText;
+        modal.dataset.projectId = projectId;
+        
+        const actionsDiv = document.getElementById('scriptModalActions');
+        if (actionsDiv) {
+            if (projectStatus === 'PENDING' || projectStatus === 'PENDIENTE') {
+                actionsDiv.classList.remove('hidden');
+            } else {
+                actionsDiv.classList.add('hidden');
+            }
+        }
+        
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     } else {
@@ -348,4 +361,65 @@ window.checkProjectStatus = async function(id) {
             else loadDashboardStats();
         }
     } catch(e) { console.error(e); }
+}
+window.approveProjectFromWeb = async function() {
+    const modal = document.getElementById('scriptModal');
+    const id = modal.dataset.projectId;
+    if(!id) return;
+    try {
+        const res = await fetch(`/api/projects/${id}/approve`, { method: 'POST' });
+        const data = await res.json();
+        if(data.success) {
+            closeScriptModal();
+            if (window.location.pathname === '/queue') loadQueueProjects();
+            else if (window.location.pathname === '/library') loadLibraryProjects();
+        }
+    } catch(e) { console.error(e); }
+}
+window.regenerateProjectFromWeb = async function() {
+    const modal = document.getElementById('scriptModal');
+    const id = modal.dataset.projectId;
+    if(!id) return;
+    try {
+        const res = await fetch(`/api/projects/${id}/regenerate`, { method: 'POST' });
+        const data = await res.json();
+        if(data.success) {
+            closeScriptModal();
+            if (window.location.pathname === '/queue') loadQueueProjects();
+            else if (window.location.pathname === '/library') loadLibraryProjects();
+        }
+    } catch(e) { console.error(e); }
+}
+
+// Global Video Preview Logic
+document.body.insertAdjacentHTML('beforeend', `
+<div id="videoPreviewModal" class="fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="relative w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
+        <button onclick="closeVideoPreview()" class="absolute top-4 right-4 z-[70] size-10 flex items-center justify-center bg-black/50 text-white rounded-full hover:bg-black/80 transition-colors">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <video id="previewPlayer" controls class="w-full h-full" src=""></video>
+    </div>
+</div>
+`);
+window.playVideo = function(url) {
+    if(!url || url === 'undefined') return alert('El video aún no está disponible.');
+    const modal = document.getElementById('videoPreviewModal');
+    const player = document.getElementById('previewPlayer');
+    if(modal && player) {
+        player.src = url;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        player.play();
+    }
+}
+window.closeVideoPreview = function() {
+    const modal = document.getElementById('videoPreviewModal');
+    const player = document.getElementById('previewPlayer');
+    if(modal && player) {
+        player.pause();
+        player.src = "";
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 }
