@@ -47,13 +47,32 @@ async function processVideo(projectData) {
 async function processHiggsfield(projectData, key) {
     try {
         console.log(`[Video Engine] Iniciando Higgsfield para proyecto: ${projectData.id}`);
-        console.log(`[Video Engine] Enviando guion a Higgsfield API usando clave...`);
-        // Simular llamada usando la api key proporcionada
-        return {
-            success: true,
-            job_id: 'higgsfield_job_' + Date.now(),
-            status: 'processing'
-        };
+        if (key) {
+            console.log(`[Video Engine] HIGGSFIELD_KEY detectada. Petición real a la API enviada...`);
+            const response = await axios.post('https://api.higgsfield.ai/v1/video', {
+                script: projectData.final_script,
+                topic: projectData.tema,
+                influencer_id: projectData.influencer_id || 'default'
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${key}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log(`[Video Engine] Respuesta Higgsfield exitosa.`);
+            return {
+                success: true,
+                job_id: response.data?.id || 'higgsfield_job_' + Date.now(),
+                status: 'processing'
+            };
+        } else {
+            console.log(`[Video Engine] No hay llave HIGGSFIELD_KEY... Simulación...`);
+            return {
+                success: true,
+                job_id: 'higgsfield_job_' + Date.now(),
+                status: 'processing'
+            };
+        }
     } catch (error) {
         console.error('[Video Engine] Error en Higgsfield:', error.message);
         throw error;

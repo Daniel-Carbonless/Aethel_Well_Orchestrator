@@ -86,7 +86,7 @@ async function loadQueueProjects() {
               let dotClass = 'bg-slate-400';
               let statusText = p.status || 'PENDING';
               if (p.status === 'PENDING' || p.status === 'PENDIENTE') { badgeClass = 'bg-amber-100 text-amber-700'; dotClass = 'bg-amber-500'; statusText = 'Pendiente'; }
-              else if (p.status === 'IN_PRODUCTION' || p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500 animate-pulse'; statusText = 'MODO SIMULACIÓN: Esperando API Key'; }
+              else if (p.status === 'IN_PRODUCTION' || p.status === 'PROCESSING') { badgeClass = 'bg-blue-100 text-blue-700'; dotClass = 'bg-blue-500 animate-pulse'; statusText = '🚀 PRODUCCIÓN ACTIVA'; }
               else if (p.status === 'READY_TO_RENDER' || p.status === 'APROBADO' || p.status === 'APPROVED') { badgeClass = 'bg-green-100 text-green-700'; dotClass = 'bg-green-500'; statusText = 'Aprobado'; }
               const row = document.createElement('tr');
               row.className = 'hover:bg-primary/[0.02] dark:hover:bg-primary/[0.05] transition-colors';

@@ -35,7 +35,7 @@ app.get('/help', (req, res) => res.sendFile(path.join(dashboardPath, 'help.html'
 
 // API: Listar Proyectos Recientes
 app.get('/api/projects', (req, res) => {
-  const jsonFilePath = 'projects.json';
+  const jsonFilePath = path.join(__dirname, 'projects.json');
   if (fs.existsSync(jsonFilePath)) {
     try {
       const data = fs.readFileSync(jsonFilePath, 'utf8');
@@ -48,7 +48,7 @@ app.get('/api/projects', (req, res) => {
 
 // API: Obtener Estadísticas
 app.get('/api/stats', (req, res) => {
-  const jsonFilePath = 'projects.json';
+  const jsonFilePath = path.join(__dirname, 'projects.json');
   let projects = [];
   if (fs.existsSync(jsonFilePath)) {
     try {
@@ -151,7 +151,7 @@ app.post('/api/generate-video', (req, res) => {
     status: 'PENDING',
     timestamp: new Date().toISOString() 
   };
-  const jsonFilePath = 'projects.json';
+  const jsonFilePath = path.join(__dirname, 'projects.json');
   let projects = [];
   
   if (fs.existsSync(jsonFilePath)) {
@@ -189,7 +189,7 @@ if (process.env.TELEGRAM_TOKEN) {
   bot.action(/approve_(.+)/, (ctx) => {
     const projectId = ctx.match[1];
     
-    const jsonFilePath = 'projects.json';
+    const jsonFilePath = path.join(__dirname, 'projects.json');
     if (fs.existsSync(jsonFilePath)) {
       const data = fs.readFileSync(jsonFilePath, 'utf8');
       let projects = JSON.parse(data);
@@ -219,7 +219,7 @@ if (process.env.TELEGRAM_TOKEN) {
     const projectId = ctx.match[1];
     ctx.reply("Re-escribiendo guion... dame 5 segundos.").catch(console.error);
     
-    const jsonFilePath = 'projects.json';
+    const jsonFilePath = path.join(__dirname, 'projects.json');
     if (fs.existsSync(jsonFilePath)) {
       const data = fs.readFileSync(jsonFilePath, 'utf8');
       let projects = JSON.parse(data);
